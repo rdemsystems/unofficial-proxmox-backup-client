@@ -27,7 +27,10 @@ gpgcheck=1
 repo_gpgcheck=1
 gpgkey=file://$REPO/keys/$ID.asc
 EOF
-    dnf -y -q install proxmox-backup-client
+    # Only our repository: the distribution's own repositories may be gone (end of life) and the
+    # RPM has no hard dependency. yum on Enterprise Linux 7, dnf everywhere else.
+    if command -v dnf >/dev/null 2>&1; then pm=dnf; else pm=yum; fi
+    $pm -y -q --disablerepo='*' --enablerepo="$ID" install proxmox-backup-client
     ;;
   arch)
     pacman-key --init >/dev/null 2>&1

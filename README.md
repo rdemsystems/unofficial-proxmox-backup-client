@@ -43,13 +43,13 @@ signed packages for:
 
 | Family | CI install test matrix | Package manager |
 |---|---|---|
-| RHEL family, Fedora | Rocky Linux 8, 9, 10 · AlmaLinux 8, 9, 10 · Fedora 43, 44 | `dnf` |
+| RHEL family, Fedora | CentOS 7 · Rocky Linux 8, 9, 10 · AlmaLinux 8, 9, 10 · Fedora 42, 43, 44 | `dnf` / `yum` |
 | Arch Linux | Arch (rolling) | `pacman` |
-| Alpine | 3.23, 3.24 | `apk` |
-| Debian, Ubuntu | Debian 11 (LTS), 12, 13, testing, sid · Ubuntu 20.04, 22.04, 24.04, 26.04, 25.04, 25.10 | `apt` (the upstream `.deb`, byte for byte) |
+| Alpine | 3.20, 3.21, 3.22, 3.23, 3.24 | `apk` |
+| Debian, Ubuntu | Debian 10, 11 (LTS), 12, 13, testing, sid · Ubuntu 20.04, 22.04, 24.04, 25.10, 26.04 | `apt` (the upstream `.deb`, byte for byte) |
 
-Test policy: every LTS release since 2020 that is still maintained, plus the current and previous
-release of distributions without LTS (Fedora, Alpine, Ubuntu interim releases); Arch is rolling.
+Test policy: every release still supported by its distribution, plus the last one that went out
+of support; Arch is rolling.
 
 Architectures: **amd64** from Proxmox's `main` component, **arm64** from Proxmox's `test`
 component (the official upstream static aarch64 build, which can lag one release behind).

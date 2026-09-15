@@ -112,8 +112,8 @@ assemble:
     paths: [public/repo/]
     expire_in: 1 week
 
-# Test matrix policy (decided 2026-09-15): every LTS release since 2020 that is still maintained,
-# plus the current and the previous release of distributions without LTS. Rolling: latest only.
+# Test matrix policy (decided 2026-09-15): every release still supported by its distribution, PLUS
+# the last one that went out of support. Rolling distributions: latest only.
 .test:
   stage: test
   needs: [sources, assemble]
@@ -126,9 +126,11 @@ test:rpm:
   variables: {FAMILY: rpm}
   parallel:
     matrix:
-      # Enterprise Linux 8, 9, 10 (Rocky, Alma); Fedora current and previous.
-      - IMAGE: ["quay.io/rockylinux/rockylinux:8", "quay.io/rockylinux/rockylinux:9", "quay.io/rockylinux/rockylinux:10",
-                "almalinux:8", "almalinux:9", "almalinux:10", "fedora:43", "fedora:44"]
+      # Enterprise Linux 8, 9, 10 (Rocky, Alma) + 7 (CentOS 7, last out of support);
+      # Fedora 43, 44 + 42 (last out of support).
+      - IMAGE: ["centos:7", "quay.io/rockylinux/rockylinux:8", "quay.io/rockylinux/rockylinux:9",
+                "quay.io/rockylinux/rockylinux:10", "almalinux:8", "almalinux:9", "almalinux:10",
+                "fedora:42", "fedora:43", "fedora:44"]
 
 test:arch:
   extends: .test
@@ -141,20 +143,21 @@ test:alpine:
   variables: {FAMILY: alpine}
   parallel:
     matrix:
-      # No LTS: current and previous stable branch.
-      - IMAGE: ["alpine:3.23", "alpine:3.24"]
+      # 3.21 to 3.24 supported + 3.20 (last out of support).
+      - IMAGE: ["alpine:3.20", "alpine:3.21", "alpine:3.22", "alpine:3.23", "alpine:3.24"]
 
 test:deb:
   extends: .test
   image: $IMAGE
   variables: {FAMILY: deb}
   before_script:
-    - apt-get update -qq && apt-get install -y -qq --no-install-recommends ca-certificates >/dev/null
+    - sh public/scripts/distro-bootstrap.sh
   parallel:
     matrix:
-      # Debian 11 (LTS), 12, 13, testing, sid; Ubuntu LTS 20.04 to 26.04, interim 25.04 and 25.10.
-      - IMAGE: ["debian:11", "debian:12", "debian:13", "debian:testing", "debian:sid",
-                "ubuntu:20.04", "ubuntu:22.04", "ubuntu:24.04", "ubuntu:26.04", "ubuntu:25.04", "ubuntu:25.10"]
+      # Debian 11 (LTS), 12, 13, testing, sid + 10 (last out of support);
+      # Ubuntu 20.04 (ESM), 22.04, 24.04, 26.04 + 25.10 (last out of support).
+      - IMAGE: ["debian:10", "debian:11", "debian:12", "debian:13", "debian:testing", "debian:sid",
+                "ubuntu:20.04", "ubuntu:22.04", "ubuntu:24.04", "ubuntu:25.10", "ubuntu:26.04"]
 
 publish:
   stage: publish
