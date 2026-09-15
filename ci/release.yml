@@ -1,0 +1,162 @@
+# Child pipeline: one release of the repository. Included by the generated child.yml.
+# Nothing is published until the manual "publish" job is played, and only after "assemble" has
+# verified the release offline and every installation test has passed.
+#
+# Artifacts are DISJOINT on purpose: "package" ships the packages, each indexer ships only the
+# metadata it generates, and "assemble" is the single job that puts the tree together, writes
+# index.json and verifies it. Jobs must never rely on the order in which artifacts are extracted.
+#
+# Secrets: the signing keys live in secrets/ of the private GitLab project, next to public/ (decision of
+# 2026-09-15), read by public/scripts/lib.sh. No protected variable, no runner tag: both runners may
+# build. secrets/ is outside public/, which is its own Git repository on GitHub.
+
+stages: [sources, fetch, package, index, assemble, test, publish]
+
+variables:
+  DEBIAN_FRONTEND: noninteractive
+  PUBLIC_REPO: https://github.com/rdemsystems/unofficial-pbs-client.git
+  PUBLIC_SHA: "__PUBLIC_SHA__"   # replaced by scripts/gen-child-pipeline.sh
+
+# public/ is not part of the private GitLab project: clone it once, at the pinned commit, and hand
+# the sources to every job. Only this job ships public/'s sources, so artifacts stay disjoint.
+sources:
+  stage: sources
+  image: debian:trixie-slim
+  script:
+    - apt-get update -qq && apt-get install -y -qq --no-install-recommends ca-certificates git >/dev/null
+    - git clone -q "$PUBLIC_REPO" public
+    - git -C public checkout -q "$PUBLIC_SHA"
+    - test "$(git -C public rev-parse HEAD)" = "$PUBLIC_SHA"
+  artifacts:
+    paths: [public/scripts/, public/config.env, public/keys/, public/tests/, public/server/]
+    expire_in: 1 week
+
+.debian-tools:
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq --no-install-recommends ca-certificates curl git gpg gpgv jq dpkg openssl rsync openssh-client apt-utils >/dev/null
+
+fetch:
+  stage: fetch
+  image: debian:trixie-slim
+  before_script: !reference [.debian-tools, before_script]
+  script:
+    - FORCE_RELEASE=1 public/scripts/check-upstream.sh   # re-verify the signed chain in this pipeline
+    - public/scripts/fetch-upstream.sh
+    - public/scripts/pull-current.sh
+  artifacts:
+    paths: [public/build/upstream.env, public/build/manifest-previous.jsonl, public/build/root-*, public/repo/]
+    expire_in: 1 week
+
+package:
+  stage: package
+  image: debian:trixie-slim
+  needs: [sources, fetch]
+  before_script:
+    - !reference [.debian-tools, before_script]
+    - public/scripts/install-nfpm.sh
+  script:
+    - public/scripts/package.sh
+    - public/scripts/source-archive.sh
+    - public/scripts/export-keys.sh
+  artifacts:
+    # Packages, sources, public keys and the manifests — never public/build/nfpm (it names the key file).
+    paths: [public/repo/rpm/, public/repo/arch/, public/repo/alpine/, public/repo/deb/pool/, public/repo/source/, public/repo/keys/,
+            public/build/manifest-new.jsonl, public/build/manifest-previous.jsonl, public/build/upstream.env]
+    expire_in: 1 week
+
+index:rpm:
+  stage: index
+  image: fedora:latest
+  needs: [sources, package]
+  before_script:
+    - dnf -y -q install createrepo_c rpm gnupg2 jq >/dev/null
+  script: [public/scripts/index-rpm.sh]
+  artifacts: {paths: ["public/repo/rpm/*/repodata/", "public/repo/rpm/unofficial-pbs-client.repo"], expire_in: 1 week}
+
+index:arch:
+  stage: index
+  image: archlinux:latest
+  needs: [sources, package]
+  before_script:
+    - pacman -Sy --noconfirm --needed jq >/dev/null
+  script: [public/scripts/index-arch.sh]
+  artifacts: {paths: ["public/repo/arch/*/unofficial-pbs-client.*", "public/repo/arch/*/*.pkg.tar.zst.sig"], expire_in: 1 week}
+
+index:apk:
+  stage: index
+  image: alpine:3.22            # apk-tools 2 writes the v2 index that apk-tools 3 still reads
+  needs: [sources, package]
+  before_script:
+    - apk add --no-progress -q bash jq abuild openssl coreutils
+  script: [public/scripts/index-apk.sh]
+  artifacts: {paths: ["public/repo/alpine/*/APKINDEX.tar.gz"], expire_in: 1 week}
+
+index:deb:
+  stage: index
+  image: debian:trixie-slim
+  needs: [sources, package]
+  before_script: !reference [.debian-tools, before_script]
+  script: [public/scripts/index-deb.sh]
+  artifacts: {paths: ["public/repo/deb/dists/"], expire_in: 1 week}
+
+assemble:
+  stage: assemble
+  image: debian:trixie-slim
+  needs: [sources, package, "index:rpm", "index:arch", "index:apk", "index:deb"]
+  before_script: !reference [.debian-tools, before_script]
+  script:
+    - public/scripts/make-index-json.sh
+    - public/scripts/verify-release.sh          # complet, signé, conforme à index.json, sans symlink
+  artifacts:
+    paths: [public/repo/]
+    expire_in: 1 week
+
+.test:
+  stage: test
+  needs: [sources, assemble]
+  script:
+    - public/scripts/test-install.sh "$FAMILY"
+
+test:rpm:
+  extends: .test
+  image: $IMAGE
+  variables: {FAMILY: rpm}
+  parallel:
+    matrix:
+      - IMAGE: [fedora:latest, "quay.io/rockylinux/rockylinux:9", "almalinux:10"]
+
+test:arch:
+  extends: .test
+  image: archlinux:latest
+  variables: {FAMILY: arch}
+
+test:alpine:
+  extends: .test
+  image: $IMAGE
+  variables: {FAMILY: alpine}
+  parallel:
+    matrix:
+      - IMAGE: ["alpine:3.22", "alpine:3.24"]
+
+test:deb:
+  extends: .test
+  image: $IMAGE
+  variables: {FAMILY: deb}
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq --no-install-recommends ca-certificates >/dev/null
+  parallel:
+    matrix:
+      - IMAGE: ["debian:12", "debian:13", "ubuntu:22.04", "ubuntu:24.04"]
+
+publish:
+  stage: publish
+  image: debian:trixie-slim
+  needs: [sources, assemble, test:rpm, test:arch, test:alpine, test:deb]
+  before_script: !reference [.debian-tools, before_script]
+  script:
+    - public/scripts/verify-release.sh          # une dernière fois, sur l'arbre exact qui part
+    - public/scripts/publish.sh
+  when: manual               # nothing reaches nimbus.rdem-systems.com without a human click
+  allow_failure: false
+  resource_group: publish
