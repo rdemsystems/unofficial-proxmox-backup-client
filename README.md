@@ -1,5 +1,7 @@
 # Unofficial proxmox-backup-client packages
 
+🇫🇷 [Lire en français](README.fr.md)
+
 > **Unofficial repository, not affiliated with or endorsed by Proxmox Server Solutions GmbH.**
 > Proxmox is a registered trademark of Proxmox Server Solutions GmbH.
 
@@ -15,6 +17,8 @@ against Proxmox's own repository.
 - 📘 **Tutorial — back up a Linux server with proxmox-backup-client:**
   https://nimbus.rdem-systems.com/en/blog/proxmox-backup-client-linux/
   (French: https://nimbus.rdem-systems.com/blog/proxmox-backup-client-linux/)
+- 🪟 **On Windows:** [NimbusBackupClient](https://github.com/rdemsystems/NimbusBackupClient), our
+  graphical client for Proxmox Backup Server.
 - ☁️ **Maintained by [NimbusBackup](https://nimbus.rdem-systems.com/)**, managed Proxmox Backup
   Server hosting by RDEM Systems.
 
