@@ -14,7 +14,7 @@ stages: [sources, fetch, package, index, assemble, test, publish]
 
 variables:
   DEBIAN_FRONTEND: noninteractive
-  PUBLIC_REPO: https://github.com/rdemsystems/unofficial-pbs-client.git
+  PUBLIC_REPO: https://github.com/rdemsystems/unofficial-proxmox-backup-client.git
   PUBLIC_SHA: "__PUBLIC_SHA__"   # replaced by scripts/gen-child-pipeline.sh
 
 # public/ is not part of the private GitLab project: clone it once, at the pinned commit, and hand

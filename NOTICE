@@ -1,0 +1,11 @@
+Unofficial proxmox-backup-client packages
+Copyright (c) 2026 RDEM Systems
+
+The MIT License in LICENSE covers the build scripts and configuration in this repository only.
+
+The packaged software (proxmox-backup-client, pxar) is Copyright Proxmox Server Solutions GmbH
+and licensed under the GNU AGPL v3 or later; see the copyright file shipped in every package.
+The corresponding source is published with every release under source/.
+
+This project is not affiliated with or endorsed by Proxmox Server Solutions GmbH.
+Proxmox is a registered trademark of Proxmox Server Solutions GmbH.

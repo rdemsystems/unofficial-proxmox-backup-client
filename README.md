@@ -3,6 +3,10 @@
 > **Unofficial repository, not affiliated with or endorsed by Proxmox Server Solutions GmbH.**
 > Proxmox is a registered trademark of Proxmox Server Solutions GmbH.
 
+Signed `proxmox-backup-client` packages for **Fedora, RHEL, Rocky Linux, AlmaLinux, Arch Linux and
+Alpine** (amd64, arm64) — Proxmox's official static binary, repackaged unchanged, checked daily
+against Proxmox's own repository.
+
 **To install the client, use the package repository, not this Git repository:**
 
 - 📦 **Package repository and install instructions (dnf, pacman, apk, apt):**
@@ -117,7 +121,7 @@ tests/publish-roundtrip.sh     # publish + forced command against a temporary di
 
 ## Licenses
 
-- Build scripts in this repository: MIT, see `LICENSE`.
+- Build scripts in this repository: MIT, see `LICENSE` (scope and trademark notice in `NOTICE`).
 - Packaged software: GNU AGPL v3 or later, Copyright Proxmox Server Solutions GmbH. The
   corresponding source is published with every release under `source/`, taken from
   Proxmox's `proxmox-backup` repository (https://git.proxmox.com/?p=proxmox-backup.git).

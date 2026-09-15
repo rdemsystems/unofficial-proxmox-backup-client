@@ -2,7 +2,7 @@
 # Print the child pipeline for the "release" trigger job: the full release when
 # check-upstream.sh found something new, a single no-op job otherwise.
 # (GitLab evaluates rules before any job runs, hence a generated child pipeline.)
-# public/ is its own Git repository (github.com/rdemsystems/unofficial-pbs-client), cloned by the
+# public/ is its own Git repository (github.com/rdemsystems/unofficial-proxmox-backup-client), cloned by the
 # parent pipeline: the child pipeline is ci/release.yml itself, pinned to that exact commit.
 # shellcheck source=lib.sh
 . "$(dirname "$0")/lib.sh"
