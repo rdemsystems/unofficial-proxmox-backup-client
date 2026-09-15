@@ -10,7 +10,8 @@ against Proxmox's own repository.
 **To install the client, use the package repository, not this Git repository:**
 
 - 📦 **Package repository and install instructions (dnf, pacman, apk, apt):**
-  https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/
+  https://nimbus.rdem-systems.com/en/unofficial-repository-proxmox-backup-client/
+  (French: https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/)
 - 📘 **Tutorial — back up a Linux server with proxmox-backup-client:**
   https://nimbus.rdem-systems.com/en/blog/proxmox-backup-client-linux/
   (French: https://nimbus.rdem-systems.com/blog/proxmox-backup-client-linux/)
@@ -64,7 +65,7 @@ of `debian/changelog` at that commit).
 
 All repository metadata is signed: never add `--nogpgcheck` or `--allow-untrusted`. Compare the
 key fingerprint your package manager shows with the one published on
-https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/ and in [`FINGERPRINTS.txt`](https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/FINGERPRINTS.txt):
+https://nimbus.rdem-systems.com/en/unofficial-repository-proxmox-backup-client/ and in [`FINGERPRINTS.txt`](https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/FINGERPRINTS.txt):
 
 ```
 OpenPGP (RPM, pacman, apt): 827D EFD8 FDAD 5EE6 4080  5C30 904E B81A 1243 150F

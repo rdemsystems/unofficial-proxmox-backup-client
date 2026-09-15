@@ -46,8 +46,8 @@ cat > "$tree/README.md" <<EOF
 # Packages branch — generated, do not edit
 
 This branch is the signed package repository built from the [main branch](../../tree/main),
-replaced by the release pipeline at each release. It is served at
-<$PUBLIC_BASE_URL/>.
+replaced by the release pipeline at each release. It is served under
+<$PUBLIC_BASE_URL/> (install instructions: <https://nimbus.rdem-systems.com/en/unofficial-repository-proxmox-backup-client/>).
 
 Check a copy with \`SHA256SUMS\` and its signature \`SHA256SUMS.asc\`
 (OpenPGP key \`$SIGNING_KEY_FPR\`).
