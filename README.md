@@ -10,7 +10,7 @@ against Proxmox's own repository.
 **To install the client, use the package repository, not this Git repository:**
 
 - 📦 **Package repository and install instructions (dnf, pacman, apk, apt):**
-  https://nimbus.rdem-systems.com/unofficial-pbs-client/
+  https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/
 - 📘 **Tutorial — back up a Linux server with proxmox-backup-client:**
   https://nimbus.rdem-systems.com/en/blog/proxmox-backup-client-linux/
   (French: https://nimbus.rdem-systems.com/blog/proxmox-backup-client-linux/)
@@ -63,7 +63,7 @@ of `debian/changelog` at that commit).
 
 All repository metadata is signed: never add `--nogpgcheck` or `--allow-untrusted`. Compare the
 key fingerprint your package manager shows with the one published on
-https://nimbus.rdem-systems.com/unofficial-pbs-client/ and in [`FINGERPRINTS.txt`](https://nimbus.rdem-systems.com/unofficial-pbs-client/keys/FINGERPRINTS.txt):
+https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/ and in [`FINGERPRINTS.txt`](https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/FINGERPRINTS.txt):
 
 ```
 OpenPGP (RPM, pacman, apt): 827D EFD8 FDAD 5EE6 4080  5C30 904E B81A 1243 150F
@@ -75,18 +75,18 @@ Commands run as root.
 
 ```sh
 curl -fsSL -o /etc/yum.repos.d/unofficial-pbs-client.repo \
-  https://nimbus.rdem-systems.com/unofficial-pbs-client/rpm/unofficial-pbs-client.repo
+  https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/rpm/unofficial-pbs-client.repo
 dnf install proxmox-backup-client
 ```
 
 ### Arch Linux (pacman)
 
 ```sh
-curl -fsSL -o /tmp/upc.asc https://nimbus.rdem-systems.com/unofficial-pbs-client/keys/unofficial-pbs-client.asc
+curl -fsSL -o /tmp/upc.asc https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/unofficial-pbs-client.asc
 gpg --show-keys /tmp/upc.asc      # compare with the fingerprint above
 pacman-key --add /tmp/upc.asc
 pacman-key --lsign-key "$(gpg --with-colons --show-keys /tmp/upc.asc | awk -F: '/^fpr:/{print $10; exit}')"
-printf '\n[unofficial-pbs-client]\nServer = https://nimbus.rdem-systems.com/unofficial-pbs-client/arch/$arch\n' >> /etc/pacman.conf
+printf '\n[unofficial-pbs-client]\nServer = https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/arch/$arch\n' >> /etc/pacman.conf
 pacman -Syu proxmox-backup-client
 ```
 
@@ -94,8 +94,8 @@ pacman -Syu proxmox-backup-client
 
 ```sh
 wget -O /etc/apk/keys/unofficial-pbs-client.rsa.pub \
-  https://nimbus.rdem-systems.com/unofficial-pbs-client/keys/unofficial-pbs-client.rsa.pub
-echo "https://nimbus.rdem-systems.com/unofficial-pbs-client/alpine" >> /etc/apk/repositories
+  https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/unofficial-pbs-client.rsa.pub
+echo "https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/alpine" >> /etc/apk/repositories
 apk add proxmox-backup-client
 ```
 
@@ -106,8 +106,8 @@ Proxmox's own `pbs-client` repository is the official alternative.
 
 ```sh
 install -d /etc/apt/keyrings
-curl -fsSL -o /etc/apt/keyrings/unofficial-pbs-client.asc https://nimbus.rdem-systems.com/unofficial-pbs-client/keys/unofficial-pbs-client.asc
-echo "deb [signed-by=/etc/apt/keyrings/unofficial-pbs-client.asc] https://nimbus.rdem-systems.com/unofficial-pbs-client/deb stable main" \
+curl -fsSL -o /etc/apt/keyrings/unofficial-pbs-client.asc https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/unofficial-pbs-client.asc
+echo "deb [signed-by=/etc/apt/keyrings/unofficial-pbs-client.asc] https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/deb stable main" \
   > /etc/apt/sources.list.d/unofficial-pbs-client.list
 apt update && apt install proxmox-backup-client-static
 ```
