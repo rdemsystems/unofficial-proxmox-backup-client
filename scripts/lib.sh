@@ -52,7 +52,8 @@ gpg_setup() {
   chmod 700 "$GNUPGHOME"
   # Le trousseau temporaire contient la clé privée : il part avec le script, meme en cas d'echec.
   trap 'rm -rf "$GNUPGHOME"' EXIT
-  gpg --batch --quiet --import "$UPC_GPG_KEY_FILE" 2>/dev/null || die "cannot import UPC_GPG_KEY_FILE"
+  local err
+  err=$(gpg --batch --quiet --import "$UPC_GPG_KEY_FILE" 2>&1) || die "cannot import UPC_GPG_KEY_FILE: $err"
   GPG_KEY_FPR=$(gpg --batch --with-colons --list-secret-keys | awk -F: '/^fpr:/{print $10; exit}')
   [[ -n "$GPG_KEY_FPR" ]] || die "no secret key in UPC_GPG_KEY_FILE"
   GPG_SIGN=(gpg --batch --yes --local-user "$GPG_KEY_FPR" --pinentry-mode loopback --passphrase "${UPC_GPG_PASSPHRASE:-}")
