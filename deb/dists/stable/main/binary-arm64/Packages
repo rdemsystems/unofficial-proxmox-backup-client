@@ -1,0 +1,21 @@
+Package: proxmox-backup-client-static
+Architecture: arm64
+Version: 4.2.4-1
+Priority: optional
+Section: admin
+Source: rust-proxmox-backup
+Maintainer: Proxmox Support Team <support@proxmox.com>
+Installed-Size: 27936
+Depends: qrencode
+Conflicts: proxmox-backup-client
+Filename: pool/main/proxmox-backup-client-static_4.2.4-1_arm64.deb
+Size: 9011456
+MD5sum: 6f6d0224467340970ece09088d56811e
+SHA1: 685a3064b4ac6a91b88d65a7a713c1cb5ad569c6
+SHA256: 5d85445099e7a65dc9ffdaf1c8102d16112a4181566dfc791e5a1bff02909acd
+SHA512: a1ba55b50b8b97add81edb66ea1842ba8964e6d58b177ef72b39434f50ccc4e9bd954e4e5b8af1844cb55c25db43ddb8095d870f451a263d846713fe5e30fe75
+Homepage: https://www.proxmox.com
+Description: Proxmox Backup Client tools (statically linked)
+ This package contains the Proxmox Backup client, which provides a
+ simple command line tool to create and restore backups.
+

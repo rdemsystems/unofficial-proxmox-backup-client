@@ -1,0 +1,28 @@
+Architectures: amd64 arm64
+Codename: stable
+Components: main
+Date: Tue, 15 Sep 2026 10:16:20 +0000
+Description: Unofficial mirror of Proxmox's proxmox-backup-client-static, not affiliated with Proxmox Server Solutions GmbH
+Label: unofficial-repository-proxmox-backup-client
+Origin: unofficial-repository-proxmox-backup-client
+Suite: stable
+MD5Sum:
+ 944896c1268f44553975eeffc0c077c9              864 main/binary-amd64/Packages
+ 0c09afb66a22d8498110a628a582cbf6              560 main/binary-amd64/Packages.gz
+ 4ea0ae6948942e1e721c8dbbcab9bb82              864 main/binary-arm64/Packages
+ ee52a8b5ef64c0f964f0fce121f13136              562 main/binary-arm64/Packages.gz
+SHA1:
+ 61d7f3b63ca3ca61f8253d2b520d06c967c363d0              864 main/binary-amd64/Packages
+ 46390eff46fd396289294f12363e1702ba9c67c2              560 main/binary-amd64/Packages.gz
+ fa6778d1748a55e8202d5cc66120f9ff7c3d0dc2              864 main/binary-arm64/Packages
+ b94e59bcaabf667c9fa50e674c23da645b4d1200              562 main/binary-arm64/Packages.gz
+SHA256:
+ 0a80b7ce61f176df6cea08425c95f0860f3335d741dd476383d7b88e3f9b5598              864 main/binary-amd64/Packages
+ eb6e727f7d39f88169f508152beccdcc74c871a1a5da12d307a727b93bace662              560 main/binary-amd64/Packages.gz
+ f0d4acc858e30b2ac37b3bde0988069a83c805f903ad74479e210d016e663f61              864 main/binary-arm64/Packages
+ ec3cbc39d385ff5c91747b83f4957e1944d83bad6ea801055c361af5bd0f212d              562 main/binary-arm64/Packages.gz
+SHA512:
+ 7c0936918d300fa97fcd56573a639b8abe7fdf1843eb21d5244c4e9ac7ccc02ae9878f59050d32d9b4657240f206bf2319a3561ef01f554c8f8e551ee6849fc0              864 main/binary-amd64/Packages
+ 60d47c0d2165aab25d43cae47ea40f2aaccd5321406285e3267b3f682012b1337a9ab5d199db904d2f762241dbf6b31e9142099d9fe47f344f7bfe1b1c5e5603              560 main/binary-amd64/Packages.gz
+ b106eaafd19021dc581df89acc40612531b3d5283c77264378cf24ab586a73f10dd9e6b92ce8d8dd602499042c3098e6d0cee6416a0a2882f08e0e266a2b818f              864 main/binary-arm64/Packages
+ b2df255ee381531e5691d433e284a8457f93f85f8d15a087d2a975c2ec60ae525e77ff8f5a86c564bcef9f4f95e44701d2799aa0e573eb4cd6dffb4dcbaa05c6              562 main/binary-arm64/Packages.gz

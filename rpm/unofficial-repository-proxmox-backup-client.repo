@@ -1,0 +1,9 @@
+# Unofficial proxmox-backup-client packages - not affiliated with Proxmox Server Solutions GmbH.
+# https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/
+[unofficial-repository-proxmox-backup-client]
+name=Unofficial proxmox-backup-client (RDEM Systems)
+baseurl=https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/rpm/$basearch
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/unofficial-repository-proxmox-backup-client.asc

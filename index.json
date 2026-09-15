@@ -1,0 +1,144 @@
+{
+  "repository": "unofficial-repository-proxmox-backup-client",
+  "base_url": "https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client",
+  "generated": "2026-09-15T10:17:00Z",
+  "unofficial": "Not affiliated with Proxmox Server Solutions GmbH. Proxmox is a registered trademark of Proxmox Server Solutions GmbH.",
+  "upstream": {
+    "base": "http://download.proxmox.com/debian/pbs-client",
+    "suite": "trixie",
+    "package": "proxmox-backup-client-static"
+  },
+  "keys": {
+    "openpgp_fingerprint": "827DEFD8FDAD5EE640805C30904EB81A1243150F",
+    "openpgp": "keys/unofficial-repository-proxmox-backup-client.asc",
+    "apk": "keys/unofficial-repository-proxmox-backup-client.rsa.pub"
+  },
+  "latest": {
+    "amd64": "4.2.5-1",
+    "arm64": "4.2.4-1"
+  },
+  "packages": [
+    {
+      "format": "apk",
+      "deb_arch": "amd64",
+      "arch": "x86_64",
+      "file": "alpine/x86_64/proxmox-backup-client-4.2.5_p1-r1.apk",
+      "upstream_version": "4.2.5-1",
+      "upstream_component": "main",
+      "upstream_deb_sha256": "a74dd39d617f0d4eaef5580d5f55cf31c35aa666ba9555825daf2362ee463263",
+      "pkgrel": "1",
+      "sha256": "8b53ba9fc6b3ff1760f67d3256c7b17419080037b81c6ecbfb6c706f1aa645ac",
+      "size": 13797287
+    },
+    {
+      "format": "archlinux",
+      "deb_arch": "amd64",
+      "arch": "x86_64",
+      "file": "arch/x86_64/proxmox-backup-client-4.2.5_p1-1-x86_64.pkg.tar.zst",
+      "upstream_version": "4.2.5-1",
+      "upstream_component": "main",
+      "upstream_deb_sha256": "a74dd39d617f0d4eaef5580d5f55cf31c35aa666ba9555825daf2362ee463263",
+      "pkgrel": "1",
+      "sha256": "1dfdbab8e27dbb51bca1f41817d15de2fbaf9e26c9d4e34333b8c725a2780051",
+      "size": 12728909
+    },
+    {
+      "format": "deb",
+      "deb_arch": "amd64",
+      "arch": "amd64",
+      "file": "deb/pool/main/proxmox-backup-client-static_4.2.5-1_amd64.deb",
+      "upstream_version": "4.2.5-1",
+      "upstream_component": "main",
+      "upstream_deb_sha256": "a74dd39d617f0d4eaef5580d5f55cf31c35aa666ba9555825daf2362ee463263",
+      "pkgrel": "1",
+      "sha256": "a74dd39d617f0d4eaef5580d5f55cf31c35aa666ba9555825daf2362ee463263",
+      "size": 9333040
+    },
+    {
+      "format": "rpm",
+      "deb_arch": "amd64",
+      "arch": "x86_64",
+      "file": "rpm/x86_64/proxmox-backup-client-4.2.5-1.1.x86_64.rpm",
+      "upstream_version": "4.2.5-1",
+      "upstream_component": "main",
+      "upstream_deb_sha256": "a74dd39d617f0d4eaef5580d5f55cf31c35aa666ba9555825daf2362ee463263",
+      "pkgrel": "1",
+      "sha256": "279c33979c5deb5b286ff2456bc65b6cd1be3f60773fb80074ef6fa72583d609",
+      "size": 11321736
+    },
+    {
+      "format": "source",
+      "deb_arch": "amd64",
+      "arch": "source",
+      "file": "source/proxmox-backup-4.2.5-1.zip",
+      "upstream_version": "4.2.5-1",
+      "upstream_component": "main",
+      "upstream_deb_sha256": "a74dd39d617f0d4eaef5580d5f55cf31c35aa666ba9555825daf2362ee463263",
+      "upstream_commit": "5f890fcb6dc07148c22568ad03bf9c079bcad249",
+      "pkgrel": "1",
+      "sha256": "04342a4ae853a56d77282503407b53f27fb7743c6115175b47b811ac2a47d2e7",
+      "size": 5690826
+    },
+    {
+      "format": "apk",
+      "deb_arch": "arm64",
+      "arch": "aarch64",
+      "file": "alpine/aarch64/proxmox-backup-client-4.2.4_p1-r1.apk",
+      "upstream_version": "4.2.4-1",
+      "upstream_component": "test",
+      "upstream_deb_sha256": "5d85445099e7a65dc9ffdaf1c8102d16112a4181566dfc791e5a1bff02909acd",
+      "pkgrel": "1",
+      "sha256": "bf593f2b9f70646436813ddb41297d72445a9d85a61543666779794fd5b4f0bd",
+      "size": 13562546
+    },
+    {
+      "format": "archlinux",
+      "deb_arch": "arm64",
+      "arch": "aarch64",
+      "file": "arch/aarch64/proxmox-backup-client-4.2.4_p1-1-aarch64.pkg.tar.zst",
+      "upstream_version": "4.2.4-1",
+      "upstream_component": "test",
+      "upstream_deb_sha256": "5d85445099e7a65dc9ffdaf1c8102d16112a4181566dfc791e5a1bff02909acd",
+      "pkgrel": "1",
+      "sha256": "288ea3a6f0cea659795883653b0b09592e62bfe149904b9a6a9f78559e27be49",
+      "size": 12735229
+    },
+    {
+      "format": "deb",
+      "deb_arch": "arm64",
+      "arch": "arm64",
+      "file": "deb/pool/main/proxmox-backup-client-static_4.2.4-1_arm64.deb",
+      "upstream_version": "4.2.4-1",
+      "upstream_component": "test",
+      "upstream_deb_sha256": "5d85445099e7a65dc9ffdaf1c8102d16112a4181566dfc791e5a1bff02909acd",
+      "pkgrel": "1",
+      "sha256": "5d85445099e7a65dc9ffdaf1c8102d16112a4181566dfc791e5a1bff02909acd",
+      "size": 9011456
+    },
+    {
+      "format": "rpm",
+      "deb_arch": "arm64",
+      "arch": "aarch64",
+      "file": "rpm/aarch64/proxmox-backup-client-4.2.4-1.1.aarch64.rpm",
+      "upstream_version": "4.2.4-1",
+      "upstream_component": "test",
+      "upstream_deb_sha256": "5d85445099e7a65dc9ffdaf1c8102d16112a4181566dfc791e5a1bff02909acd",
+      "pkgrel": "1",
+      "sha256": "f286c5e0792cb90797eb6603876644167bc1d133935230be8ecd709a9c54ee30",
+      "size": 10773404
+    },
+    {
+      "format": "source",
+      "deb_arch": "arm64",
+      "arch": "source",
+      "file": "source/proxmox-backup-4.2.4-1.zip",
+      "upstream_version": "4.2.4-1",
+      "upstream_component": "test",
+      "upstream_deb_sha256": "5d85445099e7a65dc9ffdaf1c8102d16112a4181566dfc791e5a1bff02909acd",
+      "upstream_commit": "b750ffceca49e1b7bf3415cceb152c0f31f8fe9e",
+      "pkgrel": "1",
+      "sha256": "c0ad4f465fca727ea29c538e77ea3847e794254e46ed2603a643ab7472a238d6",
+      "size": 5688240
+    }
+  ]
+}
