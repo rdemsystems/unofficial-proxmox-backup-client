@@ -112,6 +112,8 @@ assemble:
     paths: [public/repo/]
     expire_in: 1 week
 
+# Test matrix policy (decided 2026-09-15): every LTS release since 2020 that is still maintained,
+# plus the current and the previous release of distributions without LTS. Rolling: latest only.
 .test:
   stage: test
   needs: [sources, assemble]
@@ -124,7 +126,9 @@ test:rpm:
   variables: {FAMILY: rpm}
   parallel:
     matrix:
-      - IMAGE: [fedora:latest, "quay.io/rockylinux/rockylinux:9", "almalinux:10"]
+      # Enterprise Linux 8, 9, 10 (Rocky, Alma); Fedora current and previous.
+      - IMAGE: ["quay.io/rockylinux/rockylinux:8", "quay.io/rockylinux/rockylinux:9", "quay.io/rockylinux/rockylinux:10",
+                "almalinux:8", "almalinux:9", "almalinux:10", "fedora:43", "fedora:44"]
 
 test:arch:
   extends: .test
@@ -137,7 +141,8 @@ test:alpine:
   variables: {FAMILY: alpine}
   parallel:
     matrix:
-      - IMAGE: ["alpine:3.22", "alpine:3.24"]
+      # No LTS: current and previous stable branch.
+      - IMAGE: ["alpine:3.23", "alpine:3.24"]
 
 test:deb:
   extends: .test
@@ -147,9 +152,9 @@ test:deb:
     - apt-get update -qq && apt-get install -y -qq --no-install-recommends ca-certificates >/dev/null
   parallel:
     matrix:
-      # Debian 11 (LTS), 12, 13, testing and sid/unstable; Ubuntu LTS 20.04 to 26.04 plus the interim 25.10.
+      # Debian 11 (LTS), 12, 13, testing, sid; Ubuntu LTS 20.04 to 26.04, interim 25.04 and 25.10.
       - IMAGE: ["debian:11", "debian:12", "debian:13", "debian:testing", "debian:sid",
-                "ubuntu:20.04", "ubuntu:22.04", "ubuntu:24.04", "ubuntu:25.10", "ubuntu:26.04"]
+                "ubuntu:20.04", "ubuntu:22.04", "ubuntu:24.04", "ubuntu:26.04", "ubuntu:25.04", "ubuntu:25.10"]
 
 publish:
   stage: publish
