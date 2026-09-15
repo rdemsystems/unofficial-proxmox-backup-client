@@ -147,7 +147,9 @@ test:deb:
     - apt-get update -qq && apt-get install -y -qq --no-install-recommends ca-certificates >/dev/null
   parallel:
     matrix:
-      - IMAGE: ["debian:12", "debian:13", "ubuntu:22.04", "ubuntu:24.04"]
+      # Debian 11 (LTS), 12, 13, testing and sid/unstable; Ubuntu LTS 20.04 to 26.04 plus the interim 25.10.
+      - IMAGE: ["debian:11", "debian:12", "debian:13", "debian:testing", "debian:sid",
+                "ubuntu:20.04", "ubuntu:22.04", "ubuntu:24.04", "ubuntu:25.10", "ubuntu:26.04"]
 
 publish:
   stage: publish

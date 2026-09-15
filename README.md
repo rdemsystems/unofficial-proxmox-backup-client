@@ -46,7 +46,7 @@ signed packages for:
 | Fedora, RHEL, Rocky, Alma | Fedora, Rocky 9, Alma 10 | `dnf` |
 | Arch Linux | Arch | `pacman` |
 | Alpine | 3.22, 3.24 | `apk` |
-| Debian, Ubuntu | Debian 12/13, Ubuntu 22.04/24.04 | `apt` (the upstream `.deb`, byte for byte) |
+| Debian, Ubuntu | Debian 11 (LTS), 12, 13, testing, sid; Ubuntu 20.04, 22.04, 24.04, 25.10, 26.04 | `apt` (the upstream `.deb`, byte for byte) |
 
 Architectures: **amd64** from Proxmox's `main` component, **arm64** from Proxmox's `test`
 component (the official upstream static aarch64 build, which can lag one release behind).
