@@ -73,7 +73,20 @@ if [[ -d "$REPO/deb/pool" ]]; then
     || bad "deb/dists/stable/InRelease does not verify"
 fi
 
-# 5. Sources next to the binaries they were built from (AGPL).
+# 5. SHA256SUMS: signed by the pinned key, covering exactly the files of the tree.
+if [[ -s "$REPO/SHA256SUMS" && -s "$REPO/SHA256SUMS.asc" ]]; then
+  gpg --batch --status-fd 1 --verify "$REPO/SHA256SUMS.asc" "$REPO/SHA256SUMS" 2>/dev/null \
+    | awk -v fpr="$SIGNING_KEY_FPR" '$2 == "VALIDSIG" && ($3 == fpr || $NF == fpr) {ok=1} END {exit !ok}' \
+    || bad "SHA256SUMS.asc does not verify with $SIGNING_KEY_FPR"
+  (cd "$REPO" && sha256sum --quiet --strict -c SHA256SUMS >/dev/null 2>&1) || bad "SHA256SUMS does not match the tree"
+  extra=$(comm -13 <(cut -c67- "$REPO/SHA256SUMS" | LC_ALL=C sort) \
+                   <(cd "$REPO" && find . -type f ! -name SHA256SUMS ! -name SHA256SUMS.asc -printf '%P\n' | LC_ALL=C sort))
+  [[ -z "$extra" ]] || bad "files not listed in SHA256SUMS: $extra"
+else
+  bad "SHA256SUMS or SHA256SUMS.asc missing (run sign-manifest.sh)"
+fi
+
+# 6. Sources next to the binaries they were built from (AGPL).
 while read -r v; do
   [[ -s "$REPO/source/proxmox-backup-$v.zip" ]] || bad "no source archive for upstream $v"
 done < <(jq -r '[.packages[].upstream_version] | unique | .[]' "$REPO/index.json")

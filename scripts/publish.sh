@@ -1,28 +1,63 @@
 #!/usr/bin/env bash
-# Upload repo/ as a new release directory on the web host, then switch the "current" symlink
-# atomically (clients never see half-written metadata). Unchanged files are hard-linked from
-# the previous release. The server side is restricted by server/upc-ssh-command.sh.
+# Push the verified repo/ tree to the "packages" branch of the GitHub repository.
+# The web host pulls that branch (server/pull-packages.sh), checks the signed SHA256SUMS with a
+# key it keeps itself, and switches atomically. GitHub carries the files; it is not trusted.
 #
-#   UPC_DEPLOY_TARGET        user@host
-#   UPC_DEPLOY_SSH_KEY       private key file (forced command on the server)
-#   UPC_DEPLOY_KNOWN_HOSTS   known_hosts file pinning the host key
-#   UPC_DEPLOY_PATH          default /srv/unofficial-pbs-client
+# The branch holds a single commit, replaced at each release (force push): keeping the history
+# would put every old package in every clone. The published branch is fetched first, so files
+# that did not change are not uploaded again.
+#
+#   UPC_PACKAGES_REMOTE   default git@github.com:rdemsystems/unofficial-proxmox-backup-client.git
+#   UPC_PACKAGES_BRANCH   default packages
+#   UPC_DEPLOY_SSH_KEY    default ../secrets/github-deploy-ecdsa (GitHub deploy key, write access)
+#   UPC_KNOWN_HOSTS       default ../tools/github-known-hosts
 # shellcheck source=lib.sh
 . "$(dirname "$0")/lib.sh"
 
 [[ "$MAINTAINER" != *TODO* ]] || die "set a real MAINTAINER in config.env before publishing"
-for f in index.json "keys/$REPO_ID.asc" "keys/$APK_KEY_NAME" keys/FINGERPRINTS.txt; do
+for f in index.json SHA256SUMS SHA256SUMS.asc "keys/$REPO_ID.asc" "keys/$APK_KEY_NAME" keys/FINGERPRINTS.txt; do
   [[ -s "$REPO/$f" ]] || die "repo/$f is missing"
 done
-: "${UPC_DEPLOY_TARGET:?}" "${UPC_DEPLOY_SSH_KEY:?}" "${UPC_DEPLOY_KNOWN_HOSTS:?}"
-base="${UPC_DEPLOY_PATH:-/srv/unofficial-pbs-client}"
-# Une seconde ne suffit pas a garantir l'unicite : on ajoute le pipeline/job CI, ou un nonce.
-suffix="${CI_PIPELINE_ID:-local}-${CI_JOB_ID:-$RANDOM}"
-release="$(date -u +%Y%m%dT%H%M%SZ)-${suffix//[^A-Za-z0-9]/}"
+remote="${UPC_PACKAGES_REMOTE:-git@github.com:rdemsystems/unofficial-proxmox-backup-client.git}"
+branch="${UPC_PACKAGES_BRANCH:-packages}"
+generated=$(jq -r .generated "$REPO/index.json")
 
-chmod 600 "$UPC_DEPLOY_SSH_KEY"
-ssh_cmd="ssh -i $UPC_DEPLOY_SSH_KEY -o IdentitiesOnly=yes -o UserKnownHostsFile=$UPC_DEPLOY_KNOWN_HOSTS -o StrictHostKeyChecking=yes"
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+if [[ "$remote" == *@*:* || "$remote" == ssh://* ]]; then
+  key="${UPC_DEPLOY_SSH_KEY:-$ROOT/../secrets/github-deploy-ecdsa}"
+  known="${UPC_KNOWN_HOSTS:-$ROOT/../tools/github-known-hosts}"
+  [[ -s "$key" && -s "$known" ]] || die "deploy key or known_hosts missing ($key, $known)"
+  install -m 600 "$key" "$work/key"          # a checked-out key may be group-readable: ssh refuses it
+  export GIT_SSH_COMMAND="ssh -i $work/key -o IdentitiesOnly=yes -o UserKnownHostsFile=$known -o StrictHostKeyChecking=yes"
+fi
 
-rsync -a --delete --link-dest="$base/current/" -e "$ssh_cmd" "$REPO/" "$UPC_DEPLOY_TARGET:$base/releases/$release/"
-$ssh_cmd "$UPC_DEPLOY_TARGET" "activate $release"
-log "published release $release ($(jq -c .latest "$REPO/index.json"))"
+tree="$work/tree"
+git -c init.defaultBranch="$branch" init -q "$tree"
+lease="--force-with-lease=refs/heads/$branch:"   # empty value: the branch must not exist yet
+if git -C "$tree" fetch -q --depth 1 "$remote" "+refs/heads/$branch:refs/remotes/published/$branch" 2>/dev/null; then
+  lease="--force-with-lease=refs/heads/$branch:$(git -C "$tree" rev-parse "refs/remotes/published/$branch")"
+else
+  log "no $branch branch published yet"
+fi
+
+cp -a "$REPO/." "$tree/"
+cat > "$tree/README.md" <<EOF
+# Packages branch — generated, do not edit
+
+This branch is the signed package repository built from the [main branch](../../tree/main),
+replaced by the release pipeline at each release. It is served at
+<$PUBLIC_BASE_URL/>.
+
+Check a copy with \`SHA256SUMS\` and its signature \`SHA256SUMS.asc\`
+(OpenPGP key \`$SIGNING_KEY_FPR\`).
+
+Release generated $generated.
+EOF
+
+name="${MAINTAINER% <*}"; email="${MAINTAINER##*<}"; email="${email%>}"
+git -C "$tree" add -A
+git -C "$tree" -c user.name="$name" -c user.email="$email" commit -q \
+  -m "Release $generated" -m "latest: $(jq -c .latest "$REPO/index.json")"
+git -C "$tree" push -q "$lease" "$remote" "HEAD:refs/heads/$branch"
+log "published $(git -C "$tree" rev-parse HEAD) to $branch ($(jq -c .latest "$REPO/index.json"))"

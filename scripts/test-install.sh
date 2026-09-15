@@ -14,7 +14,7 @@ set -eu
 family=${1:?usage: $0 rpm|arch|alpine|deb}
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 REPO="$ROOT/repo"
-ID=unofficial-pbs-client
+ID=unofficial-repository-proxmox-backup-client
 
 case "$family" in
   rpm)

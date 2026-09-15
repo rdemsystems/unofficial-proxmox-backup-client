@@ -74,27 +74,27 @@ Commands run as root.
 ### Fedora, RHEL, Rocky Linux, AlmaLinux (dnf)
 
 ```sh
-curl -fsSL -o /etc/yum.repos.d/unofficial-pbs-client.repo \
-  https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/rpm/unofficial-pbs-client.repo
+curl -fsSL -o /etc/yum.repos.d/unofficial-repository-proxmox-backup-client.repo \
+  https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/rpm/unofficial-repository-proxmox-backup-client.repo
 dnf install proxmox-backup-client
 ```
 
 ### Arch Linux (pacman)
 
 ```sh
-curl -fsSL -o /tmp/upc.asc https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/unofficial-pbs-client.asc
+curl -fsSL -o /tmp/upc.asc https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/unofficial-repository-proxmox-backup-client.asc
 gpg --show-keys /tmp/upc.asc      # compare with the fingerprint above
 pacman-key --add /tmp/upc.asc
 pacman-key --lsign-key "$(gpg --with-colons --show-keys /tmp/upc.asc | awk -F: '/^fpr:/{print $10; exit}')"
-printf '\n[unofficial-pbs-client]\nServer = https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/arch/$arch\n' >> /etc/pacman.conf
+printf '\n[unofficial-repository-proxmox-backup-client]\nServer = https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/arch/$arch\n' >> /etc/pacman.conf
 pacman -Syu proxmox-backup-client
 ```
 
 ### Alpine Linux (apk)
 
 ```sh
-wget -O /etc/apk/keys/unofficial-pbs-client.rsa.pub \
-  https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/unofficial-pbs-client.rsa.pub
+wget -O /etc/apk/keys/unofficial-repository-proxmox-backup-client.rsa.pub \
+  https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/unofficial-repository-proxmox-backup-client.rsa.pub
 echo "https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/alpine" >> /etc/apk/repositories
 apk add proxmox-backup-client
 ```
@@ -106,9 +106,9 @@ Proxmox's own `pbs-client` repository is the official alternative.
 
 ```sh
 install -d /etc/apt/keyrings
-curl -fsSL -o /etc/apt/keyrings/unofficial-pbs-client.asc https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/unofficial-pbs-client.asc
-echo "deb [signed-by=/etc/apt/keyrings/unofficial-pbs-client.asc] https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/deb stable main" \
-  > /etc/apt/sources.list.d/unofficial-pbs-client.list
+curl -fsSL -o /etc/apt/keyrings/unofficial-repository-proxmox-backup-client.asc https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/unofficial-repository-proxmox-backup-client.asc
+echo "deb [signed-by=/etc/apt/keyrings/unofficial-repository-proxmox-backup-client.asc] https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/deb stable main" \
+  > /etc/apt/sources.list.d/unofficial-repository-proxmox-backup-client.list
 apt update && apt install proxmox-backup-client-static
 ```
 
@@ -150,18 +150,40 @@ index-*.sh          createrepo_c + signed repomd.xml, repo-add + signed db, sign
 test-install.sh     install from the signed repository in each distribution, TLS probe,
                     optional real backup + restore
 make-index-json.sh  repo/index.json
-verify-release.sh   offline gate: every file signed, listed, matching index.json, no symlink
-publish.sh          rsync into a new release directory, atomic switch of "current"
+sign-manifest.sh    repo/SHA256SUMS of every file, detached OpenPGP signature
+verify-release.sh   offline gate: every file signed, listed, matching index.json and SHA256SUMS, no symlink
+publish.sh          force push of the tree to the "packages" branch of this repository
 ```
+
+## How the web host picks a release up
+
+The CI has no access to the web server. `server/pull-packages.sh` runs from cron on the web host:
+it fetches the `packages` branch anonymously, checks `SHA256SUMS.asc` with a copy of the public
+key kept on the host (fingerprint pinned in the script), refuses any file that is not listed or
+does not match, any symlink or hidden file, and any release older than the one being served, then
+switches a `current` symlink atomically. GitHub carries the files; it is not trusted.
+
+Setup on the host, once:
+
+```
+mkdir -p /var/www/unofficial-repository-proxmox-backup-client
+cd /var/www/unofficial-repository-proxmox-backup-client
+curl -fsSLO https://raw.githubusercontent.com/rdemsystems/unofficial-proxmox-backup-client/main/server/pull-packages.sh
+chmod +x pull-packages.sh
+gpg --dearmor < signing-key.pub.asc > trusted.gpg   # check the fingerprint first
+crontab: */10 * * * * /var/www/unofficial-repository-proxmox-backup-client/pull-packages.sh
+```
+
+The `packages` branch holds the packages themselves (over 100 MB). To read or audit the
+scripts only: `git clone --single-branch https://github.com/rdemsystems/unofficial-proxmox-backup-client.git`.
 
 The GitLab pipeline (`.gitlab-ci.yml`) runs `check-upstream` daily and only builds when
 Proxmox has published a new version. Publishing is a manual job.
 
 ## CI setup
 
-The GitLab project that runs the CI is private; this public repository is a separate history
-exported from its `public/` directory (a separate history, gated against any private key or
-token material).
+The GitLab project that runs the CI is private; it clones this repository at a pinned commit and
+signs with keys kept in its own `secrets/` directory, which never comes here.
 
 - **Signing keys**: read from the private project's `secrets/` directory (next to `public/`) by `scripts/lib.sh`
   (`UPC_GPG_KEY_FILE`, `UPC_APK_KEY_FILE` can override them for local runs).
@@ -174,7 +196,7 @@ token material).
 ```
 scripts/check-upstream.sh && scripts/fetch-upstream.sh
 NFPM=/path/to/nfpm UPC_GPG_KEY_FILE=... UPC_APK_KEY_FILE=... scripts/package.sh
-tests/publish-roundtrip.sh     # publish + forced command against a temporary directory
+tests/packages-roundtrip.sh    # publish.sh + pull-packages.sh against a local bare repository: switch, tampering, rollback
 ```
 
 ## Licenses

@@ -8,7 +8,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 . "$ROOT/config.env"
 
 BUILD="$ROOT/build"   # scratch area (upstream metadata, extracted trees, manifests)
-REPO="$ROOT/repo"     # the tree that ends up under $PUBLIC_BASE_URL
+REPO="${UPC_REPO_DIR:-$ROOT/repo}"     # the tree that ends up under $PUBLIC_BASE_URL
 
 log() { printf '>> %s\n' "$*" >&2; }
 die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }

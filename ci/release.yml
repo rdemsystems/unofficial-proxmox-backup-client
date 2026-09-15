@@ -24,7 +24,7 @@ sources:
   image: debian:trixie-slim
   script:
     - apt-get update -qq && apt-get install -y -qq --no-install-recommends ca-certificates git >/dev/null
-    - git clone -q "$PUBLIC_REPO" public
+    - git clone -q --single-branch --branch main "$PUBLIC_REPO" public   # not the packages branch
     - git -C public checkout -q "$PUBLIC_SHA"
     - test "$(git -C public rev-parse HEAD)" = "$PUBLIC_SHA"
   artifacts:
@@ -72,7 +72,7 @@ index:rpm:
   before_script:
     - dnf -y -q install createrepo_c rpm gnupg2 jq >/dev/null
   script: [public/scripts/index-rpm.sh]
-  artifacts: {paths: ["public/repo/rpm/*/repodata/", "public/repo/rpm/unofficial-pbs-client.repo"], expire_in: 1 week}
+  artifacts: {paths: ["public/repo/rpm/*/repodata/", "public/repo/rpm/unofficial-repository-proxmox-backup-client.repo"], expire_in: 1 week}
 
 index:arch:
   stage: index
@@ -81,7 +81,7 @@ index:arch:
   before_script:
     - pacman -Sy --noconfirm --needed jq >/dev/null
   script: [public/scripts/index-arch.sh]
-  artifacts: {paths: ["public/repo/arch/*/unofficial-pbs-client.*", "public/repo/arch/*/*.pkg.tar.zst.sig"], expire_in: 1 week}
+  artifacts: {paths: ["public/repo/arch/*/unofficial-repository-proxmox-backup-client.*", "public/repo/arch/*/*.pkg.tar.zst.sig"], expire_in: 1 week}
 
 index:apk:
   stage: index
@@ -107,7 +107,8 @@ assemble:
   before_script: !reference [.debian-tools, before_script]
   script:
     - public/scripts/make-index-json.sh
-    - public/scripts/verify-release.sh          # complet, signé, conforme à index.json, sans symlink
+    - public/scripts/sign-manifest.sh           # SHA256SUMS signé : seule racine de confiance de web-01
+    - public/scripts/verify-release.sh          # complet, signé, conforme à index.json et SHA256SUMS, sans symlink
   artifacts:
     paths: [public/repo/]
     expire_in: 1 week
@@ -166,7 +167,9 @@ publish:
   before_script: !reference [.debian-tools, before_script]
   script:
     - public/scripts/verify-release.sh          # une dernière fois, sur l'arbre exact qui part
-    - public/scripts/publish.sh
+    - public/scripts/publish.sh                 # force push vers la branche GitHub "packages"
+  # web-01 tire la branche par cron (server/pull-packages.sh), vérifie SHA256SUMS.asc avec sa propre
+  # copie de la clé et bascule : aucun accès au serveur depuis la CI.
   when: manual               # nothing reaches nimbus.rdem-systems.com without a human click
   allow_failure: false
   resource_group: publish
