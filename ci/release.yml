@@ -114,7 +114,7 @@ assemble:
     expire_in: 1 week
 
 # Test matrix policy (decided 2026-09-15): every release still supported by its distribution, PLUS
-# the last one that went out of support. Rolling distributions: latest only.
+# at least the last one that went out of support. Rolling distributions: latest only.
 .test:
   stage: test
   needs: [sources, assemble]
@@ -155,8 +155,7 @@ test:deb:
     - sh public/scripts/distro-bootstrap.sh
   parallel:
     matrix:
-      # Debian 11 (LTS), 12, 13, testing, sid + 10 (last out of support);
-      # Ubuntu 20.04 (ESM), 22.04, 24.04, 26.04 + 25.10 (last out of support).
+      # Debian 10, 11, 12, 13, testing, sid; Ubuntu 20.04, 22.04, 24.04, 25.10, 26.04.
       - IMAGE: ["debian:10", "debian:11", "debian:12", "debian:13", "debian:testing", "debian:sid",
                 "ubuntu:20.04", "ubuntu:22.04", "ubuntu:24.04", "ubuntu:25.10", "ubuntu:26.04"]
 

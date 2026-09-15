@@ -46,9 +46,9 @@ signed packages for:
 | RHEL family, Fedora | CentOS 7 · Rocky Linux 8, 9, 10 · AlmaLinux 8, 9, 10 · Fedora 42, 43, 44 | `dnf` / `yum` |
 | Arch Linux | Arch (rolling) | `pacman` |
 | Alpine | 3.20, 3.21, 3.22, 3.23, 3.24 | `apk` |
-| Debian, Ubuntu | Debian 10, 11 (LTS), 12, 13, testing, sid · Ubuntu 20.04, 22.04, 24.04, 25.10, 26.04 | `apt` (the upstream `.deb`, byte for byte) |
+| Debian, Ubuntu | Debian 10, 11, 12, 13, testing, sid · Ubuntu 20.04, 22.04, 24.04, 25.10, 26.04 | `apt` (the upstream `.deb`, byte for byte) |
 
-Test policy: every release still supported by its distribution, plus the last one that went out
+Test policy: every release still supported by its distribution, plus at least the last one that went out
 of support; Arch is rolling.
 If you want other distributions, [let us know](https://nimbus.rdem-systems.com/en/contact/), and tell us why.
 
