@@ -50,6 +50,7 @@ signed packages for:
 
 Test policy: every release still supported by its distribution, plus the last one that went out
 of support; Arch is rolling.
+If you want other distributions, [let us know](https://nimbus.rdem-systems.com/en/contact/), and tell us why.
 
 Architectures: **amd64** from Proxmox's `main` component, **arm64** from Proxmox's `test`
 component (the official upstream static aarch64 build, which can lag one release behind).
