@@ -41,6 +41,26 @@ Aucune ligne du code de Proxmox n'est modifiée ni recompilée. Les paquets RPM,
 n'ajoutent que deux liens symboliques vers les certificats, expliqués dans
 [La seule modification](#la-seule-modification).
 
+### Ce que contiennent les paquets
+
+`proxmox-backup-client` et `pxar`, avec leurs pages de manuel et leurs complétions bash et zsh — les
+fichiers du paquet statique de Proxmox, tels quels.
+
+**`proxmox-file-restore` n'y est pas**, pour trois raisons :
+
+1. **Proxmox n'en publie pas de version statique.** Le paquet officiel est lié dynamiquement à
+   `libc6`, `libssl3`, `libzstd1`, `libacl1` et `libuuid1` ; ces bibliothèques n'existent ni sous
+   Alpine (musl) ni sous RHEL avec les mêmes noms de version : le binaire ne démarrerait pas.
+2. **Le livrer supposerait de le compiler** — ce serait un autre projet, et la fin de la seule
+   promesse qui compte ici : le binaire que vous installez est celui de Proxmox, pas le nôtre.
+3. **Il lui faut plus que lui-même.** Restaurer un fichier depuis l'image disque d'une VM lance une
+   machine virtuelle dédiée : image de restauration de Proxmox (noyau + initramfs) et QEMU, non
+   portables hors Debian. Pour une sauvegarde d'hôte, `catalog shell` et `restore --pattern` du
+   client font déjà la restauration fichier par fichier.
+
+Si Proxmox publie un jour un `proxmox-file-restore` statique dans son dépôt client, nous
+l'empaquetterons comme le reste, sans le recompiler.
+
 | Famille | Tests d'installation en CI | Gestionnaire de paquets |
 |---|---|---|
 | RHEL, Fedora | CentOS 7 · Rocky Linux 8, 9, 10 · AlmaLinux 8, 9, 10 · Fedora 42, 43, 44 | `dnf` / `yum` |

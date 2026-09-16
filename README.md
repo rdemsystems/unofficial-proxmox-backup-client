@@ -42,6 +42,25 @@ repackages Proxmox's own binaries for the distributions Proxmox does not ship pa
 No Proxmox code is changed or recompiled. The only addition in the RPM, Arch and APK packages
 is two certificate symlinks, explained in [The one change we make](#the-one-change-we-make).
 
+### What the packages contain
+
+`proxmox-backup-client` and `pxar`, with their man pages and bash/zsh completions — the files of
+Proxmox's static package, as they are.
+
+**`proxmox-file-restore` is not included**, for three reasons:
+
+1. **Proxmox publishes no static build of it.** The official package is dynamically linked against
+   `libc6`, `libssl3`, `libzstd1`, `libacl1` and `libuuid1`; those libraries exist neither on Alpine
+   (musl) nor on RHEL under the same sonames, so the binary would not start.
+2. **Shipping it would mean compiling it** — a different project from this one, and the end of the
+   only promise that matters here: the binary you install is Proxmox's, not ours.
+3. **It needs more than itself.** Restoring a file from a VM disk image runs a dedicated virtual
+   machine: Proxmox's restore image (kernel + initramfs) and QEMU, neither portable outside Debian.
+   For a host backup, the client's `catalog shell` and `restore --pattern` already do file-level restore.
+
+If Proxmox ever publishes a static `proxmox-file-restore` in its client repository, we will package
+it like the rest, without recompiling it.
+
 Proxmox publishes the Proxmox Backup Server client for Debian only. This repository takes
 Proxmox's own statically linked build (`proxmox-backup-client-static`), checks it against
 Proxmox's signed repository index, and republishes it, **without recompiling anything**, as
