@@ -205,6 +205,14 @@ NFPM=/path/to/nfpm UPC_GPG_KEY_FILE=... UPC_APK_KEY_FILE=... scripts/package.sh
 tests/packages-roundtrip.sh    # publish.sh + pull-packages.sh against a local bare repository: switch, tampering, rollback
 ```
 
+## Need somewhere to send those backups?
+
+The client is only half the job: it needs a Proxmox Backup Server to write to. We run managed
+PBS datastores, billed per usable TB, with a token that cannot delete — so a compromised machine
+cannot erase its own backups. Options: two-site replication, offline disks, LTO tape.
+
+**Find the plan that fits:** https://nimbus.rdem-systems.com/en/choose-backup/
+
 ## Licenses
 
 - Build scripts in this repository: MIT, see `LICENSE` (scope and trademark notice in `NOTICE`).

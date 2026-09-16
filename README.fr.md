@@ -135,6 +135,15 @@ Ces deux-là seulement : lier tout `/usr/lib/ssl` vers `/etc/ssl` ferait aussi l
 statique le `openssl.cnf` de la distribution. Les binaires, pages de manuel et complétions shell
 sont les fichiers d'origine. Les fichiers `.deb` sont servis sans modification.
 
+## Il vous faut une cible pour ces sauvegardes ?
+
+Le client ne fait que la moitié du travail : il lui faut un Proxmox Backup Server où écrire. Nous
+exploitons des PBS managés, facturés au To utile, avec un jeton qui ne peut pas supprimer — une
+machine compromise ne peut donc pas effacer ses propres sauvegardes. Au choix : réplication sur
+deux sites, disques hors ligne, bande LTO.
+
+**Trouver l'offre adaptée :** https://nimbus.rdem-systems.com/choisir-mon-backup/
+
 ## Licences
 
 - Scripts de build de ce dépôt : MIT, voir `LICENSE` (périmètre et mention de marque dans `NOTICE`).
