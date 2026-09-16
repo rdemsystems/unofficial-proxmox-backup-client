@@ -136,6 +136,22 @@ Ces deux-là seulement : lier tout `/usr/lib/ssl` vers `/etc/ssl` ferait aussi l
 statique le `openssl.cnf` de la distribution. Les binaires, pages de manuel et complétions shell
 sont les fichiers d'origine. Les fichiers `.deb` sont servis sans modification.
 
+## Nous ne sommes pas les premiers
+
+D'autres empaquetages non officiels existaient avant celui-ci, tenus bénévolement :
+
+- [pbs-client](https://github.com/ciroiriarte/pbs-client) de Ciro Iriarte, sur l'
+  [openSUSE Build Service](https://download.opensuse.org/repositories/home:/ciriarte:/pbs-client/) :
+  il **recompile le client depuis les sources** pour openSUSE, Rocky Linux, Ubuntu et Debian, et empaquette
+  aussi `pxar` et `proxmox-file-restore`. Démarche opposée à la nôtre, qui ne recompile rien — et
+  complémentaire, puisqu'il couvre openSUSE, que nous ne couvrons pas.
+- L'[AUR](https://aur.archlinux.org/packages/proxmox-backup-client) pour Arch Linux, et plusieurs projets
+  [COPR](https://copr.fedorainfracloud.org/coprs/fulltext/?fulltext=proxmox-backup-client) pour Fedora et RHEL.
+
+Ce que nous faisons différemment : la vérification de l'amont est quotidienne et automatisée, chaque version
+passe les tests d'installation avant publication, et les métadonnées sont signées. Au 16 septembre 2026,
+l'amont était en 4.2.5-1 et les paquets AUR et COPR cités entre 4.0.16 et 4.2.2 — constat daté, pas un reproche.
+
 ## Il vous faut une cible pour ces sauvegardes ?
 
 Le client ne fait que la moitié du travail : il lui faut un Proxmox Backup Server où écrire. Nous

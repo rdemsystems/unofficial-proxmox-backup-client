@@ -206,6 +206,22 @@ NFPM=/path/to/nfpm UPC_GPG_KEY_FILE=... UPC_APK_KEY_FILE=... scripts/package.sh
 tests/packages-roundtrip.sh    # publish.sh + pull-packages.sh against a local bare repository: switch, tampering, rollback
 ```
 
+## We are not the first
+
+Other unofficial packaging efforts came before this one, maintained on volunteered time:
+
+- [pbs-client](https://github.com/ciroiriarte/pbs-client) by Ciro Iriarte, on the
+  [openSUSE Build Service](https://download.opensuse.org/repositories/home:/ciriarte:/pbs-client/):
+  it **rebuilds the client from source** for openSUSE, Rocky Linux, Ubuntu and Debian, and also packages
+  `pxar` and `proxmox-file-restore`. The opposite approach to ours, which recompiles nothing — and a
+  complementary one, since it covers openSUSE and we do not.
+- The [AUR](https://aur.archlinux.org/packages/proxmox-backup-client) for Arch Linux, and several
+  [COPR](https://copr.fedorainfracloud.org/coprs/fulltext/?fulltext=proxmox-backup-client) projects for Fedora and RHEL.
+
+What we do differently: the upstream check is daily and automated, every version passes the install tests
+before it is published, and the metadata is signed. On 16 September 2026, upstream was at 4.2.5-1 while the
+AUR and COPR packages above sat between 4.0.16 and 4.2.2 — a dated observation, not a criticism.
+
 ## Need somewhere to send those backups?
 
 The client is only half the job: it needs a Proxmox Backup Server to write to. We run managed
