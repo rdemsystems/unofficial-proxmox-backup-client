@@ -19,8 +19,9 @@ against Proxmox's own repository.
   (French: https://nimbus.rdem-systems.com/blog/proxmox-backup-client-linux/)
 - 🪟 **On Windows:** [NimbusBackupClient](https://github.com/rdemsystems/NimbusBackupClient), our
   graphical client for Proxmox Backup Server.
-- ☁️ **Maintained by [NimbusBackup](https://nimbus.rdem-systems.com/)**, managed Proxmox Backup
-  Server hosting by RDEM Systems.
+- ☁️ **Need managed PBS backup space?** Pick a plan:
+  https://nimbus.rdem-systems.com/en/choose-backup/ — maintained by
+  [NimbusBackup](https://nimbus.rdem-systems.com/), managed Proxmox Backup Server hosting by RDEM Systems.
 
 This GitHub repository publishes the build scripts (MIT) so that anyone can audit or reproduce
 how the packages are made. The CI that signs and publishes the packages runs on RDEM Systems'
