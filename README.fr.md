@@ -12,14 +12,14 @@ vérifié chaque jour contre le dépôt de Proxmox.
 **Pour installer le client, utilisez le dépôt de paquets, pas ce dépôt Git :**
 
 - 📦 **Dépôt de paquets et instructions d'installation (dnf, pacman, apk, apt) :**
-  https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/
+  https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo
 - 📘 **Tutoriel — sauvegarder un serveur Linux avec proxmox-backup-client :**
-  https://nimbus.rdem-systems.com/blog/proxmox-backup-client-linux/
+  https://nimbus.rdem-systems.com/blog/proxmox-backup-client-linux/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo
 - 🪟 **Sous Windows :** [NimbusBackupClient](https://github.com/rdemsystems/NimbusBackupClient),
   notre client graphique pour Proxmox Backup Server.
 - ☁️ **Besoin d'espace de sauvegarde sur un PBS managé ?** Choisissez votre offre :
-  https://nimbus.rdem-systems.com/choisir-mon-backup/ — dépôt maintenu par
-  [NimbusBackup](https://nimbus.rdem-systems.com/), hébergement de Proxmox Backup Server managé par RDEM Systems.
+  https://nimbus.rdem-systems.com/choisir-mon-backup/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo — dépôt maintenu par
+  [NimbusBackup](https://nimbus.rdem-systems.com/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo), hébergement de Proxmox Backup Server managé par RDEM Systems.
 
 Ce dépôt GitHub publie les scripts de build (MIT), pour que chacun puisse vérifier ou reproduire la
 fabrication des paquets. La CI qui signe et publie les paquets tourne sur le GitLab de RDEM Systems ;
@@ -50,7 +50,7 @@ n'ajoutent que deux liens symboliques vers les certificats, expliqués dans
 
 Politique de test : chaque version encore supportée par sa distribution, plus au moins la dernière
 sortie du support ; Arch est en rolling release.
-Si vous voulez d'autres distributions, [faites-le-nous savoir](https://nimbus.rdem-systems.com/contact/), en nous disant pourquoi.
+Si vous voulez d'autres distributions, [faites-le-nous savoir](https://nimbus.rdem-systems.com/contact/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo), en nous disant pourquoi.
 
 Architectures : **amd64** depuis le composant `main` de Proxmox, **arm64** depuis le composant
 `test` (le build statique aarch64 officiel, qui peut avoir une version de retard). Chaque paquet
@@ -63,7 +63,7 @@ Chaque release publie aussi `source/proxmox-backup-<version>.zip` : les sources 
 
 Toutes les métadonnées du dépôt sont signées : n'ajoutez jamais `--nogpgcheck` ni
 `--allow-untrusted`. Comparez l'empreinte affichée par votre gestionnaire de paquets avec celle
-publiée sur https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/ et dans
+publiée sur https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo et dans
 [`FINGERPRINTS.txt`](https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/FINGERPRINTS.txt) :
 
 ```
@@ -116,7 +116,7 @@ apt update && apt install proxmox-backup-client-static
 ### Ensuite
 
 Reliez le client à un Proxmox Backup Server, chiffrez, planifiez et restaurez — guide pas à pas :
-https://nimbus.rdem-systems.com/blog/proxmox-backup-client-linux/
+https://nimbus.rdem-systems.com/blog/proxmox-backup-client-linux/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo
 
 ## La seule modification
 
@@ -143,7 +143,7 @@ exploitons des PBS managés, facturés au To utile, avec un jeton qui ne peut pa
 machine compromise ne peut donc pas effacer ses propres sauvegardes. Au choix : réplication sur
 deux sites, disques hors ligne, bande LTO.
 
-**Trouver l'offre adaptée :** https://nimbus.rdem-systems.com/choisir-mon-backup/
+**Trouver l'offre adaptée :** https://nimbus.rdem-systems.com/choisir-mon-backup/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo
 
 ## Licences
 

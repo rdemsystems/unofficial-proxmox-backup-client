@@ -12,16 +12,16 @@ against Proxmox's own repository.
 **To install the client, use the package repository, not this Git repository:**
 
 - 📦 **Package repository and install instructions (dnf, pacman, apk, apt):**
-  https://nimbus.rdem-systems.com/en/unofficial-repository-proxmox-backup-client/
-  (French: https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/)
+  https://nimbus.rdem-systems.com/en/unofficial-repository-proxmox-backup-client/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo
+  (French: https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo)
 - 📘 **Tutorial — back up a Linux server with proxmox-backup-client:**
-  https://nimbus.rdem-systems.com/en/blog/proxmox-backup-client-linux/
-  (French: https://nimbus.rdem-systems.com/blog/proxmox-backup-client-linux/)
+  https://nimbus.rdem-systems.com/en/blog/proxmox-backup-client-linux/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo
+  (French: https://nimbus.rdem-systems.com/blog/proxmox-backup-client-linux/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo)
 - 🪟 **On Windows:** [NimbusBackupClient](https://github.com/rdemsystems/NimbusBackupClient), our
   graphical client for Proxmox Backup Server.
 - ☁️ **Need managed PBS backup space?** Pick a plan:
-  https://nimbus.rdem-systems.com/en/choose-backup/ — maintained by
-  [NimbusBackup](https://nimbus.rdem-systems.com/), managed Proxmox Backup Server hosting by RDEM Systems.
+  https://nimbus.rdem-systems.com/en/choose-backup/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo — maintained by
+  [NimbusBackup](https://nimbus.rdem-systems.com/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo), managed Proxmox Backup Server hosting by RDEM Systems.
 
 This GitHub repository publishes the build scripts (MIT) so that anyone can audit or reproduce
 how the packages are made. The CI that signs and publishes the packages runs on RDEM Systems'
@@ -56,7 +56,7 @@ signed packages for:
 
 Test policy: every release still supported by its distribution, plus at least the last one that went out
 of support; Arch is rolling.
-If you want other distributions, [let us know](https://nimbus.rdem-systems.com/en/contact/), and tell us why.
+If you want other distributions, [let us know](https://nimbus.rdem-systems.com/en/contact/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo), and tell us why.
 
 Architectures: **amd64** from Proxmox's `main` component, **arm64** from Proxmox's `test`
 component (the official upstream static aarch64 build, which can lag one release behind).
@@ -70,7 +70,7 @@ of `debian/changelog` at that commit).
 
 All repository metadata is signed: never add `--nogpgcheck` or `--allow-untrusted`. Compare the
 key fingerprint your package manager shows with the one published on
-https://nimbus.rdem-systems.com/en/unofficial-repository-proxmox-backup-client/ and in [`FINGERPRINTS.txt`](https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/FINGERPRINTS.txt):
+https://nimbus.rdem-systems.com/en/unofficial-repository-proxmox-backup-client/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo and in [`FINGERPRINTS.txt`](https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/FINGERPRINTS.txt):
 
 ```
 OpenPGP (RPM, pacman, apt): 827D EFD8 FDAD 5EE6 4080  5C30 904E B81A 1243 150F
@@ -122,7 +122,7 @@ apt update && apt install proxmox-backup-client-static
 ### Then
 
 Connect the client to a Proxmox Backup Server, encrypt, schedule and restore — step-by-step guide:
-https://nimbus.rdem-systems.com/en/blog/proxmox-backup-client-linux/
+https://nimbus.rdem-systems.com/en/blog/proxmox-backup-client-linux/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo
 
 ## The one change we make
 
@@ -212,7 +212,7 @@ The client is only half the job: it needs a Proxmox Backup Server to write to. W
 PBS datastores, billed per usable TB, with a token that cannot delete — so a compromised machine
 cannot erase its own backups. Options: two-site replication, offline disks, LTO tape.
 
-**Find the plan that fits:** https://nimbus.rdem-systems.com/en/choose-backup/
+**Find the plan that fits:** https://nimbus.rdem-systems.com/en/choose-backup/?utm_source=github&utm_medium=readme&utm_campaign=upc-repo
 
 ## Licenses
 
