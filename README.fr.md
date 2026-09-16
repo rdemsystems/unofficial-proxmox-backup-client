@@ -113,6 +113,69 @@ echo "deb [signed-by=/etc/apt/keyrings/unofficial-repository-proxmox-backup-clie
 apt update && apt install proxmox-backup-client-static
 ```
 
+### Variante manuelle (aucun fichier de configuration téléchargé chez nous)
+
+Les commandes ci-dessus écrivent un fichier de dépôt téléchargé chez nous. Pour ne récupérer que la clé,
+vérifier son empreinte et écrire la configuration vous-même — le dépôt utilise alors une clé **locale** :
+
+```sh
+curl -fsSL -o upc.asc https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/unofficial-repository-proxmox-backup-client.asc
+gpg --show-keys --with-fingerprint upc.asc
+# doit afficher : 827D EFD8 FDAD 5EE6 4080  5C30 904E B81A 1243 150F
+```
+
+`dnf`:
+
+```sh
+install -Dm644 upc.asc /etc/pki/rpm-gpg/RPM-GPG-KEY-unofficial-repository-proxmox-backup-client
+cat > /etc/yum.repos.d/unofficial-repository-proxmox-backup-client.repo <<'EOF'
+[unofficial-repository-proxmox-backup-client]
+name=Unofficial proxmox-backup-client (RDEM Systems)
+baseurl=https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/rpm/$basearch
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-unofficial-repository-proxmox-backup-client
+EOF
+dnf install proxmox-backup-client
+```
+
+`apt` (deb822):
+
+```sh
+install -Dm644 upc.asc /etc/apt/keyrings/unofficial-repository-proxmox-backup-client.asc
+cat > /etc/apt/sources.list.d/unofficial-repository-proxmox-backup-client.sources <<'EOF'
+Types: deb
+URIs: https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/deb
+Suites: stable
+Components: main
+Signed-By: /etc/apt/keyrings/unofficial-repository-proxmox-backup-client.asc
+EOF
+apt update && apt install proxmox-backup-client-static
+```
+
+`pacman` — importez la clé, puis ajoutez le bloc à la fin de `/etc/pacman.conf` :
+
+```sh
+pacman-key --add upc.asc
+pacman-key --lsign-key 827DEFD8FDAD5EE640805C30904EB81A1243150F
+```
+
+```ini
+[unofficial-repository-proxmox-backup-client]
+SigLevel = Required DatabaseRequired
+Server = https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/arch/$arch
+```
+
+`apk` — la clé APK est une clé RSA, vérifiée par son SHA256 face à `keys/FINGERPRINTS.txt` :
+
+```sh
+wget -O upc.rsa.pub https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/keys/unofficial-repository-proxmox-backup-client.rsa.pub
+sha256sum upc.rsa.pub
+install -Dm644 upc.rsa.pub /etc/apk/keys/unofficial-repository-proxmox-backup-client.rsa.pub
+echo "https://nimbus.rdem-systems.com/unofficial-repository-proxmox-backup-client/alpine" >> /etc/apk/repositories
+```
+
 ### Ensuite
 
 Reliez le client à un Proxmox Backup Server, chiffrez, planifiez et restaurez — guide pas à pas :
