@@ -1,0 +1,2 @@
+OpenPGP (RPM, pacman, deb): 827DEFD8FDAD5EE640805C30904EB81A1243150F
+APK (RSA, /etc/apk/keys/unofficial-repository-proxmox-backup-client.rsa.pub): sha256 3acd93e05a76753a3134e55fed4d9bd8bd302238eb7683b67b641897b603335e
