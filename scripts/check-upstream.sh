@@ -4,7 +4,8 @@
 #   pinned keyring -> InRelease (gpgv) -> Packages (SHA256 listed in InRelease)
 #                  -> .deb (SHA256 + size listed in Packages, checked later by fetch-upstream.sh)
 # Writes build/upstream.env and build/decision ("release" or "noop").
-# FORCE_RELEASE=1 builds even when the published index already has these versions.
+# FORCE_RELEASE=1 makes a release even when the published index already has these versions
+# (indexes re-signed, nothing rebuilt); bump PKGREL to rebuild the packages themselves.
 # shellcheck source=lib.sh
 . "$(dirname "$0")/lib.sh"
 
@@ -86,23 +87,28 @@ for pair in $UPSTREAM_ARCHES; do
   } >> "$BUILD/upstream.env"
 done
 
-# Compare with what is already published.
+# Compare with what is already published. An architecture is built only when its upstream version
+# (or our PKGREL) is not published yet; otherwise pull-current.sh carries its published packages
+# over unchanged: rebuilding them would give different bytes under the same names.
 decision=noop
 published="$meta/published-index.json"
-if curl -fsSL -o "$published" "$PUBLIC_BASE_URL/index.json" 2>/dev/null; then
-  for pair in $UPSTREAM_ARCHES; do
-    arch="${pair%%:*}"
-    v=$(upstream_get "$arch" VERSION)
-    if ! jq -e --arg a "$arch" --arg v "$v" \
-        'any(.packages[]; .deb_arch == $a and .upstream_version == $v)' "$published" >/dev/null; then
-      log "$arch: $v is not published yet"
-      decision=release
-    fi
-  done
-else
-  log "no published index.json yet: first release"
-  decision=release
-fi
+have_index=0
+curl -fsSL -o "$published" "$PUBLIC_BASE_URL/index.json" 2>/dev/null && have_index=1
+(( have_index )) || log "no published index.json yet: first release"
+for pair in $UPSTREAM_ARCHES; do
+  arch="${pair%%:*}"
+  v=$(upstream_get "$arch" VERSION)
+  build=1
+  if (( have_index )) && jq -e --arg a "$arch" --arg v "$v" --arg r "$PKGREL" \
+      'any(.packages[]; .deb_arch == $a and .upstream_version == $v and .pkgrel == $r)' "$published" >/dev/null; then
+    build=0
+    log "$arch: $v (pkgrel $PKGREL) already published, carried over"
+  else
+    log "$arch: $v (pkgrel $PKGREL) is not published yet"
+    decision=release
+  fi
+  echo "BUILD_${arch}=$build" >> "$BUILD/upstream.env"
+done
 [[ "${FORCE_RELEASE:-0}" == 1 ]] && { log "FORCE_RELEASE=1"; decision=release; }
 
 echo "$decision" > "$BUILD/decision"

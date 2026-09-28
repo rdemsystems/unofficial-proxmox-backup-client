@@ -63,7 +63,9 @@ done
 for dir in "$REPO"/alpine/*/; do
   [[ -d "$dir" ]] || continue
   [[ -s "$dir/APKINDEX.tar.gz" ]] || bad "${dir#"$REPO/"}APKINDEX.tar.gz missing"
-  tar -tzf "$dir/APKINDEX.tar.gz" 2>/dev/null | grep -q "^\.SIGN\.RSA\.${APK_KEY_NAME}$" \
+  # Listing first: "tar | grep -q" under pipefail fails when grep exits early and tar gets SIGPIPE.
+  members=$(tar -tzf "$dir/APKINDEX.tar.gz" 2>/dev/null || true)
+  grep -qx "\.SIGN\.RSA\.${APK_KEY_NAME//./\\.}" <<<"$members" \
     || bad "${dir#"$REPO/"}APKINDEX.tar.gz is not signed with $APK_KEY_NAME"
 done
 

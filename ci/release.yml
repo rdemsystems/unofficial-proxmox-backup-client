@@ -6,6 +6,13 @@
 # metadata it generates, and "assemble" is the single job that puts the tree together, writes
 # index.json and verifies it. Jobs must never rely on the order in which artifacts are extracted.
 #
+# Files carried over from the published repository (previous versions, and the current one of an
+# architecture with nothing new) never travel as artifacts: the instance refuses artifacts that
+# large (413). pull-current.sh lists them with their SHA256 (build/carried.sha256) and
+# restore-carried.sh fetches them again, checked byte for byte, in the jobs that need them: each
+# indexer (its format only), assemble, and publish. The tests install the newest amd64 version only
+# (TESTED_ARCH), so assemble drops every other carried file from the tree it hands over.
+#
 # Secrets: the signing keys live in secrets/ of the private GitLab project, next to public/ (decision of
 # 2026-09-15), read by public/scripts/lib.sh. No protected variable, no runner tag: both runners may
 # build. secrets/ is outside public/, which is its own Git repository on GitHub.
@@ -41,11 +48,13 @@ fetch:
   image: debian:trixie-slim
   before_script: !reference [.debian-tools, before_script]
   script:
-    - FORCE_RELEASE=1 public/scripts/check-upstream.sh   # re-verify the signed chain in this pipeline
+    - public/scripts/check-upstream.sh          # re-verify the signed chain in this pipeline (decision unused here)
     - public/scripts/fetch-upstream.sh
     - public/scripts/pull-current.sh
   artifacts:
-    paths: [public/build/upstream.env, public/build/manifest-previous.jsonl, public/build/root-*, public/repo/]
+    # public/repo/ holds only the upstream .deb fetched now: carried files are listed, not shipped.
+    paths: [public/build/upstream.env, public/build/manifest-previous.jsonl, "public/build/carried*.sha256",
+            public/build/root-*, public/repo/]
     expire_in: 1 week
 
 package:
@@ -62,7 +71,8 @@ package:
   artifacts:
     # Packages, sources, public keys and the manifests — never public/build/nfpm (it names the key file).
     paths: [public/repo/rpm/, public/repo/arch/, public/repo/alpine/, public/repo/deb/pool/, public/repo/source/, public/repo/keys/,
-            public/build/manifest-new.jsonl, public/build/manifest-previous.jsonl, public/build/upstream.env]
+            public/build/manifest-new.jsonl, public/build/manifest-previous.jsonl, public/build/upstream.env,
+            "public/build/carried*.sha256"]
     expire_in: 1 week
 
 index:rpm:
@@ -71,7 +81,7 @@ index:rpm:
   needs: [sources, package]
   before_script:
     - dnf -y -q install createrepo_c rpm gnupg2 jq >/dev/null
-  script: [public/scripts/index-rpm.sh]
+  script: [public/scripts/restore-carried.sh rpm/, public/scripts/index-rpm.sh]
   artifacts: {paths: ["public/repo/rpm/*/repodata/", "public/repo/rpm/unofficial-repository-proxmox-backup-client.repo"], expire_in: 1 week}
 
 index:arch:
@@ -80,7 +90,7 @@ index:arch:
   needs: [sources, package]
   before_script:
     - pacman -Sy --noconfirm --needed jq >/dev/null
-  script: [public/scripts/index-arch.sh]
+  script: [public/scripts/restore-carried.sh arch/, public/scripts/index-arch.sh]
   artifacts: {paths: ["public/repo/arch/*/unofficial-repository-proxmox-backup-client.*", "public/repo/arch/*/*.pkg.tar.zst.sig"], expire_in: 1 week}
 
 index:apk:
@@ -88,8 +98,8 @@ index:apk:
   image: alpine:3.22            # apk-tools 2 writes the v2 index that apk-tools 3 still reads
   needs: [sources, package]
   before_script:
-    - apk add --no-progress -q bash jq abuild openssl coreutils
-  script: [public/scripts/index-apk.sh]
+    - apk add --no-progress -q bash curl jq abuild openssl coreutils
+  script: [public/scripts/restore-carried.sh alpine/, public/scripts/index-apk.sh]
   artifacts: {paths: ["public/repo/alpine/*/APKINDEX.tar.gz"], expire_in: 1 week}
 
 index:deb:
@@ -97,7 +107,7 @@ index:deb:
   image: debian:trixie-slim
   needs: [sources, package]
   before_script: !reference [.debian-tools, before_script]
-  script: [public/scripts/index-deb.sh]
+  script: [public/scripts/restore-carried.sh deb/, public/scripts/index-deb.sh]
   artifacts: {paths: ["public/repo/deb/dists/"], expire_in: 1 week}
 
 assemble:
@@ -106,11 +116,13 @@ assemble:
   needs: [sources, package, "index:rpm", "index:arch", "index:apk", "index:deb"]
   before_script: !reference [.debian-tools, before_script]
   script:
+    - public/scripts/restore-carried.sh         # l'arbre complet : index.json et SHA256SUMS couvrent tout
     - public/scripts/make-index-json.sh
     - public/scripts/sign-manifest.sh           # SHA256SUMS signé : seule racine de confiance de web-01
     - public/scripts/verify-release.sh          # complet, signé, conforme à index.json et SHA256SUMS, sans symlink
+    - public/scripts/restore-carried.sh --drop   # les tests n'installent que la dernière version amd64
   artifacts:
-    paths: [public/repo/]
+    paths: [public/repo/, "public/build/carried*.sha256"]   # la liste sert à publish pour recompléter l'arbre
     expire_in: 1 week
 
 # Test matrix policy (decided 2026-09-15): every release still supported by its distribution, PLUS
@@ -165,6 +177,7 @@ publish:
   needs: [sources, assemble, test:rpm, test:arch, test:alpine, test:deb]
   before_script: !reference [.debian-tools, before_script]
   script:
+    - public/scripts/restore-carried.sh         # versions précédentes, revérifiées octet par octet
     - public/scripts/verify-release.sh          # une dernière fois, sur l'arbre exact qui part
     - public/scripts/publish.sh                 # force push vers la branche GitHub "packages"
   # web-01 tire la branche par cron (server/pull-packages.sh), vérifie SHA256SUMS.asc avec sa propre

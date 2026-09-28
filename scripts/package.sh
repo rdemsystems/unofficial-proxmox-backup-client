@@ -31,6 +31,7 @@ add_manifest() { # format deb_arch arch file version component sha
 
 for pair in $UPSTREAM_ARCHES; do
   arch="${pair%%:*}" component="${pair##*:}"
+  [[ "$(upstream_get "$arch" BUILD)" == 1 ]] || { log "$arch: already published, carried over by pull-current.sh"; continue; }
   version=$(upstream_get "$arch" VERSION)
   deb_sha=$(upstream_get "$arch" SHA256)
   deb_file=$(upstream_get "$arch" FILENAME)

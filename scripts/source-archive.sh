@@ -8,6 +8,9 @@
 . "$(dirname "$0")/lib.sh"
 
 [[ -s "$BUILD/upstream.env" ]] || die "run check-upstream.sh first"
+todo=0
+for pair in $UPSTREAM_ARCHES; do [[ "$(upstream_get "${pair%%:*}" BUILD)" == 1 ]] && todo=1; done
+(( todo )) || { log "no architecture built: every source archive is carried over"; exit 0; }
 git_dir="$BUILD/proxmox-backup.git"
 if [[ -d "$git_dir" ]]; then
   git --git-dir="$git_dir" fetch -q origin '+refs/heads/*:refs/heads/*'
@@ -18,6 +21,7 @@ mkdir -p "$REPO/source"
 
 for pair in $UPSTREAM_ARCHES; do
   arch="${pair%%:*}" component="${pair##*:}"
+  [[ "$(upstream_get "$arch" BUILD)" == 1 ]] || continue
   version=$(upstream_get "$arch" VERSION)
   deb_sha=$(upstream_get "$arch" SHA256)
   commit=$(git --git-dir="$git_dir" log --all -F --grep="bump version to $version" --format=%H -1)
@@ -26,7 +30,9 @@ for pair in $UPSTREAM_ARCHES; do
   [[ "$top" == *"($version)"* ]] || die "debian/changelog at $commit is not $version: $top"
 
   zip="source/proxmox-backup-$version.zip"
-  if [[ ! -s "$REPO/$zip" ]]; then
+  if [[ -f "$BUILD/carried.sha256" ]] && awk -v f="$zip" '$2 == f {found=1} END {exit !found}' "$BUILD/carried.sha256"; then
+    log "source $zip carried over from the published repository"
+  elif [[ ! -s "$REPO/$zip" ]]; then
     git --git-dir="$git_dir" archive --format=zip --prefix="proxmox-backup-$version/" -o "$REPO/$zip" "$commit"
     log "source $zip ($commit)"
   fi

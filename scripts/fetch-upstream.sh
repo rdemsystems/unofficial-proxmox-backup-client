@@ -9,6 +9,7 @@ mkdir -p "$BUILD/debs" "$REPO/deb/pool/main"
 
 for pair in $UPSTREAM_ARCHES; do
   arch="${pair%%:*}"
+  [[ "$(upstream_get "$arch" BUILD)" == 1 ]] || { log "$arch: nothing new upstream, not fetched"; continue; }
   filename=$(upstream_get "$arch" FILENAME)
   sha=$(upstream_get "$arch" SHA256)
   size=$(upstream_get "$arch" SIZE)

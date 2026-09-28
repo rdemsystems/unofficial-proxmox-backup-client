@@ -4,7 +4,7 @@
 # shellcheck source=lib.sh
 . "$(dirname "$0")/lib.sh"
 
-[[ -s "$BUILD/manifest-new.jsonl" ]] || die "no build/manifest-new.jsonl (run package.sh)"
+[[ -f "$BUILD/manifest-new.jsonl" ]] || die "no build/manifest-new.jsonl (run package.sh)"
 all="$BUILD/manifest-all.jsonl"
 cat "$BUILD/manifest-new.jsonl" > "$all"
 [[ -f "$BUILD/manifest-previous.jsonl" ]] && cat "$BUILD/manifest-previous.jsonl" >> "$all"

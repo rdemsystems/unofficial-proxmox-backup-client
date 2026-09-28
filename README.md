@@ -228,9 +228,13 @@ completions are the upstream files. The `.deb` files are served unmodified.
 
 ```
 check-upstream.sh   pinned Proxmox keyring -> InRelease (gpgv) -> Packages (SHA256) -> newest version
+                    per architecture: build it, or carry the published packages over unchanged
 fetch-upstream.sh   .deb checked against the signed index (SHA256 + size), extracted
-pull-current.sh     previous versions fetched back, checked against the published index.json AND,
-                    for .deb, against Proxmox's signed index again (it keeps old versions)
+pull-current.sh     what is carried over (the previous version, and the current one of an unchanged
+                    architecture), listed with the SHA256 of the published index.json; for .deb,
+                    checked against Proxmox's signed index again (it keeps old versions)
+restore-carried.sh  carried files fetched back in the jobs that need them, checked byte for byte
+                    (not passed along as CI artifacts, which would outgrow the size limit)
 package.sh          nfpm -> RPM (signed), Arch, APK (signed)
 source-archive.sh   zip of the upstream source at the matching "bump version" commit
 export-keys.sh      public keys -> repo/keys/
