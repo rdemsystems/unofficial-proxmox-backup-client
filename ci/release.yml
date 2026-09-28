@@ -32,6 +32,8 @@ sources:
   script:
     - apt-get update -qq && apt-get install -y -qq --no-install-recommends ca-certificates git >/dev/null
     - git clone -q --single-branch --branch main "$PUBLIC_REPO" public   # not the packages branch
+    # The pinned commit may live on another branch (PUBLIC_REF of a manual run): fetch it by SHA.
+    - git -C public cat-file -e "$PUBLIC_SHA^{commit}" 2>/dev/null || git -C public fetch -q origin "$PUBLIC_SHA"
     - git -C public checkout -q "$PUBLIC_SHA"
     - test "$(git -C public rev-parse HEAD)" = "$PUBLIC_SHA"
   artifacts:
