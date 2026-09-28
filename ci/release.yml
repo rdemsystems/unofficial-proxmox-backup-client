@@ -1,6 +1,7 @@
 # Child pipeline: one release of the repository. Included by the generated child.yml.
-# Nothing is published until the manual "publish" job is played, and only after "assemble" has
-# verified the release offline and every installation test has passed.
+# "publish" runs by itself once "assemble" has verified the release offline and every installation
+# test has passed (decision of 2026-09-28: a green pipeline deploys). A run built from another
+# branch of public/ (PUBLIC_REF other than main) still waits for a click.
 #
 # Artifacts are DISJOINT on purpose: "package" ships the packages, each indexer ships only the
 # metadata it generates, and "assemble" is the single job that puts the tree together, writes
@@ -184,6 +185,10 @@ publish:
     - public/scripts/publish.sh                 # force push vers la branche GitHub "packages"
   # web-01 tire la branche par cron (server/pull-packages.sh), vérifie SHA256SUMS.asc avec sa propre
   # copie de la clé et bascule : aucun accès au serveur depuis la CI.
-  when: manual               # nothing reaches nimbus.rdem-systems.com without a human click
-  allow_failure: false
+  rules:
+    # PUBLIC_REF arrives from the parent pipeline (forwarded YAML/pipeline variables).
+    - if: $PUBLIC_REF && $PUBLIC_REF != "main"
+      when: manual           # scripts from a branch not merged yet: a human decides
+      allow_failure: false
+    - when: on_success       # main, every test green: deploy
   resource_group: publish

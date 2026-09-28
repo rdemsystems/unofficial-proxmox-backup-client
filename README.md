@@ -271,7 +271,8 @@ The `packages` branch holds the packages themselves (over 100 MB). To read or au
 scripts only: `git clone --single-branch https://github.com/rdemsystems/unofficial-proxmox-backup-client.git`.
 
 The GitLab pipeline (`.gitlab-ci.yml`) runs `check-upstream` daily and only builds when
-Proxmox has published a new version. Publishing is a manual job.
+Proxmox has published a new version. When every test passes, the release is published
+automatically (a run built from another branch of this repository waits for a manual click).
 
 ## CI setup
 
